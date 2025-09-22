@@ -1,0 +1,20 @@
+.tag {
+    display: inline-block;
+    background-color: #e0e0e0;
+    padding: 5px 10px;
+    margin: 5px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #333;
+}
+
+.tag:hover {
+    background-color: #ccc;
+}
+
+/* Estilização geral para melhor visualização */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #f9f9f9;
+}

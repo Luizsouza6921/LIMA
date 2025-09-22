@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Corrida Evo — Jogo Completo (Demo)</title>
+  <style>
+    /* =====================
+       Corrida Evo - Estilos
+       Jogo completo em um arquivo
+       ===================== */
+    :root{
+      --bg:#071224; --panel:#0c1826; --road:#262b34; --accent:#ffb703; --accent2:#00d3ff; --muted:#9aa8bd; --danger:#ff4538; --ui:#0f1a2b;
+      --radius:12px; --glass: rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#031023,#071224);color:#e6eef8;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    .app{max-width:1200px;margin:18px auto;padding:14px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,var(--accent),#ff6b6b);display:flex;align-items:center;justify-content:center;font-weight:900;color:#111}
+    h1{font-size:20px;margin:0}
+    .controls{display:flex;gap:10px;align-items:center}
+    .btn{background:var(--accent);border:none;padding:8px 12px;border-radius:10px;font-weight:700;color:#0b0b0b;cursor:pointer}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    .panel{background:var(--panel);border-radius:12px;padding:10px;border:1px solid rgba(255,255,255,0.03)}
+
+    .layout{display:grid;grid-template-columns:1fr 360px;gap:16px;margin-top:14px}
+    .game-card{border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.04);background:linear-gradient(180deg,#071226,#0b1728)}
+    canvas{display:block;width:100%;height:640px;background:linear-gradient(180deg,#081425,#04111a)}
+
+    /* side UI */
+    .sidebar{display:flex;flex-direction:column;gap:12px}
+    .stat{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-radius:10px;background:var(--ui);border:1px solid rgba(255,255,255,0.02)}
+    .stat strong{font-size:18px}
+
+    .section{padding:12px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);border:1px solid rgba(255,255,255,0.02)}
+    .section h3{margin:0 0 8px;font-size:14px}
+    .row{display:flex;gap:8px}
+
+    /* on-screen controls mobile */
+    .touch-controls{position:fixed;left:0;right:0;bottom:18px;display:flex;justify-content:center;gap:12px;pointer-events:none}
+    .touch-btn{width:68px;height:68px;border-radius:999px;background:rgba(255,255,255,0.04);display:flex;align-items:center;justify-content:center;font-weight:900;border:1px solid rgba(255,255,255,0.03);pointer-events:auto}
+
+    /* HUD dentro do canvas (elementos absolute sobre canvas) */
+    .hud-overlay{position:absolute;left:50%;transform:translateX(-50%);top:14px;display:flex;gap:10px;align-items:center}
+
+    .footer{margin-top:12px;color:var(--muted);font-size:13px}
+
+    /* responsive */
+    @media (max-width:900px){
+      .layout{grid-template-columns:1fr}
+      .sidebar{order:2}
+      canvas{height:520px}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="logo">EVO</div>
+        <div>
+          <h1>Corrida Evo — demo completo</h1>
+          <div style="font-size:12px;color:var(--muted)">Corrida top-down com inimigos, power-ups, upgrade e IA simples</div>
+        </div>
+      </div>
+      <div class="controls">
+        <button id="btn-start" class="btn">Iniciar</button>
+        <button id="btn-pause" class="btn ghost">Pausar</button>
+        <button id="btn-shop" class="btn ghost">Loja</button>
+        <button id="btn-reset" class="btn ghost">Resetar Progresso</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <div class="game-card">
+        <canvas id="game" width="1024" height="640" aria-label="Jogo de corrida top-down"></canvas>
+      </div>
+
+      <aside class="sidebar">
+        <div class="section">
+          <h3>Status</h3>
+          <div class="stat"><span>Score</span><strong id="ui-score">0</strong></div>
+          <div class="stat"><span>Moedas</span><strong id="ui-coins">0</strong></div>
+          <div class="stat"><span>Nível</span><strong id="ui-level">1</strong></div>
+        </div>
+
+        <div class="section">
+          <h3>Veículo</h3>
+          <div style="display:grid;gap:6px">
+            <div class="stat"><span>Velocidade</span><strong id="ui-top">120</strong></div>
+            <div class="stat"><span>Direção</span><strong id="ui-handling">Boa</strong></div>
+            <div class="stat"><span>Escudo</span><strong id="ui-shield">0</strong></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>Missões Atuais</h3>
+          <ul id="mission-list" style="margin:8px 0 0 16px"></ul>
+        </div>
+
+        <div class="section">
+          <h3>Melhorias</h3>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button id="upgrade-speed" class="btn">Aumentar Vel. (200 moedas)</button>
+            <button id="upgrade-handling" class="btn">Melhorar Controle (150 moedas)</button>
+            <button id="upgrade-nitro" class="btn">Nitro (+1) (250 moedas)</button>
+          </div>
+        </div>
+
+      </aside>
+    </div>
+
+    <div class="footer">Controles: ← → / A D para mover, ↑ para nitro. Toque nas setas na tela em dispositivos móveis.</div>
+  </div>
+
+  <!-- On-screen touch controls for mobile -->
+  <div class="touch-controls" id="touch-controls" aria-hidden="true" style="display:none">
+    <div class="touch-btn" id="touch-left">◀</div>
+    <div class="touch-btn" id="touch-boost">▲</div>
+    <div class="touch-btn" id="touch-right">▶</div>
+  </div>
+
+  <script>
+    /* ===================================================
+       Corrida Evo - Jogo completo (JS)
+       - Top-down racer com obstáculos, inimigos e powerups
+       - Sistema de upgrades, loja e persistência via localStorage
+       - Áudio simples via WebAudio (sintetizado)
+       - Mobile touch controls
+       - Comentários em PT-BR
+       =================================================== */
+
+    // -------------------- Utilitários --------------------
+    const $ = s => document.querySelector(s);
+    const rand = (a,b)=> Math.random()*(b-a)+a;
+    const randi = (a,b)=> Math.floor(rand(a,b+1));
+    const clamp = (v,a,b)=> Math.max(a, Math.min(b, v));
+    const lerp = (a,b,t)=> a + (b-a)*t;
+
+    // -------------------- Persistência --------------------
+    const STORAGE_KEY = 'corrida_evo_v1';
+    function loadState(){ try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }catch(e){return{}} }
+    function saveState(obj){ localStorage.setItem(STORAGE_KEY, JSON.stringify(obj)); }
+
+    // -------------------- Audio (sintetizador simples) --------------------
+    class AudioEngine{
+      constructor(){
+        try{ this.ctx = new (window.AudioContext || window.webkitAudioContext)(); this.master = this.ctx.createGain(); this.master.gain.value = 0.12; this.master.connect(this.ctx.destination); this.enabled = true; }
+        catch(e){ this.enabled=false; }
+      }
+      beep(freq=880, dur=0.08, type='sine'){ if(!this.enabled) return; const o=this.ctx.createOscillator(); const g=this.ctx.createGain(); o.type=type; o.frequency.value=freq; g.gain.value=0.0001; o.connect(g); g.connect(this.master); const now=this.ctx.currentTime; o.start(now); g.gain.exponentialRampToValueAtTime(0.12, now+0.01); g.gain.exponentialRampToValueAtTime(0.0001, now+dur); o.stop(now+dur+0.02); }
+      crash(){ this.beep(120,0.25,'sawtooth'); }
+      coin(){ this.beep(1200,0.06,'triangle'); }
+      engine(freq=120){ if(!this.enabled) return; if(this.engineOsc) return; const o=this.ctx.createOscillator(); const g=this.ctx.createGain(); o.type='sawtooth'; o.frequency.value=freq; g.gain.value=0.02; o.connect(g); g.connect(this.master); o.start(); this.engineOsc={o,g}; }
+      stopEngine(){ if(this.engineOsc){ this.engineOsc.g.stop(); this.engineOsc=null; } }
+    }
+
+    const audio = new AudioEngine();
+
+    // -------------------- Canvas & escala --------------------
+    const canvas = $('#game');
+    const ctx = canvas.getContext('2d');
+    function resizeCanvas(){
+      const ratio = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = Math.floor(rect.width * ratio);
+      canvas.height = Math.floor(rect.height * ratio);
+      ctx.setTransform(ratio,0,0,ratio,0,0);
+    }
+    window.addEventListener('resize', resizeCanvas);
+    // inicializar tamanho
+    setTimeout(resizeCanvas, 60);
+
+    // -------------------- Input --------------------
+    const input = { left:false, right:false, boost:false, pause:false };
+    window.addEventListener('keydown', e=>{
+      if(e.key==='ArrowLeft' || e.key==='a') input.left=true;
+      if(e.key==='ArrowRight' || e.key==='d') input.right=true;
+      if(e.key==='ArrowUp' || e.key==='w') input.boost=true;
+      if(e.key==='Escape') togglePause();
+    });
+    window.addEventListener('keyup', e=>{
+      if(e.key==='ArrowLeft' || e.key==='a') input.left=false;
+      if(e.key==='ArrowRight' || e.key==='d') input.right=false;
+      if(e.key==='ArrowUp' || e.key==='w') input.boost=false;
+    });
+
+    // Touch controls
+    function setupTouch(){
+      const tc = $('#touch-controls');
+      function showIfMobile(){ tc.style.display = (window.innerWidth < 900) ? 'flex' : 'none'; }
+      showIfMobile(); window.addEventListener('resize', showIfMobile);
+      $('#touch-left').addEventListener('touchstart', ()=>input.left=true); $('#touch-left').addEventListener('touchend', ()=>input.left=false);
+      $('#touch-right').addEventListener('touchstart', ()=>input.right=true); $('#touch-right').addEventListener('touchend', ()=>input.right=false);
+      $('#touch-boost').addEventListener('touchstart', ()=>input.boost=true); $('#touch-boost').addEventListener('touchend', ()=>input.boost=false);
+    }
+    setupTouch();
+
+    // -------------------- Partículas --------------------
+    class Particle{
+      constructor(x,y,dx,dy,life,color,size){ this.x=x;this.y=y;this.dx=dx;this.dy=dy;this.life=life;this.t=0;this.color=color;this.size=size; }
+      step(dt){ this.t+=dt; this.x += this.dx*dt; this.y += this.dy*dt; }
+      draw(g){ g.save(); g.globalAlpha = Math.max(0,1 - this.t/this.life); g.fillStyle=this.color; g.beginPath(); g.arc(this.x,this.y,this.size,0,Math.PI*2); g.fill(); g.restore(); }
+    }
+    class ParticleSystem{
+      constructor(){ this.particles=[]; }
+      emit(x,y,count,color,spread=1){ for(let i=0;i<count;i++){ const ang = rand(0,Math.PI*2); const sp = rand(30,140)*spread; const dx = Math.cos(ang)*sp; const dy = Math.sin(ang)*sp; const life = rand(0.45,1.1); const size = rand(1,4); this.particles.push(new Particle(x,y,dx,dy,life,color,size)); } }
+      step(dt){ this.particles = this.particles.filter(p=>{ p.step(dt); return p.t < p.life; }); }
+      draw(g){ for(const p of this.particles) p.draw(g); }
+    }
+    const particles = new ParticleSystem();
+
+    // -------------------- Entidades (Player, Enemy, Obstacle, PowerUp) --------------------
+    class Entity{
+      constructor(x,y,w,h){ this.x=x; this.y=y; this.w=w; this.h=h; this.dead=false; }
+      step(dt){}
+      draw(g){}
+      intersects(o){ return !(this.x+this.w < o.x || this.x > o.x+o.w || this.y+this.h < o.y || this.y > o.y+o.h); }
+    }
+
+    class PlayerCar extends Entity{
+      constructor(x,y){ super(x,y,60,110); this.velX=0; this.velY=0; this.maxSpeed = 220; this.speed = 0; this.accel = 980; this.friction = 6; this.laneX = x; this.shield=0; this.coins=0; this.nitro=1; this.combo=0; }
+      step(dt, game){
+        // lateral control: move X
+        const steer = (input.left? -1:0) + (input.right? 1:0);
+        this.velX = lerp(this.velX, steer * 520, 0.18);
+        this.x += this.velX * dt;
+        // keep inside road
+        this.x = clamp(this.x, game.roadX + 6, game.roadX + game.roadW - this.w - 6);
+
+        // forward speed simulating movement (background scroll)
+        const target = this.maxSpeed * (input.boost && this.nitro>0 ? 1.6 : 1.0);
+        // simple engine accelerate if not at top
+        if(this.speed < target) this.speed += this.accel * dt * 0.6; else this.speed -= this.accel * dt * 0.07;
+        this.speed = clamp(this.speed, 60, this.maxSpeed * 1.6);
+
+        // consume nitro when boosting
+        if(input.boost && this.nitro > 0){ /* nitro usage handled by game events */ }
+      }
+      draw(g){
+        // car shadow
+        g.save(); g.fillStyle='rgba(0,0,0,0.35)'; g.fillRect(this.x+6, this.y+this.h-10, this.w-12, 6);
+        // body
+        g.fillStyle = '#ffb703'; g.beginPath(); g.roundRect(this.x,this.y,this.w,this.h,10); g.fill();
+        // cabin
+        g.fillStyle='#0b1a26'; g.beginPath(); g.roundRect(this.x+10,this.y+12,this.w-20,36,8); g.fill();
+        // stripes
+        g.fillStyle='#ffffff33'; g.fillRect(this.x+8,this.y+68,this.w-16,6);
+        // shield overlay
+        if(this.shield>0){ g.strokeStyle='rgba(0,200,255,0.35)'; g.lineWidth=4; g.beginPath(); g.roundRect(this.x-6,this.y-6,this.w+12,this.h+12,14); g.stroke(); }
+        g.restore();
+      }
+    }
+
+    class EnemyCar extends Entity{
+      constructor(x,y,vel,species=0){ super(x,y,56,104); this.vy = vel; this.species=species; this.laneTargetX = x; this.state='drive'; this.turnTimer = rand(0.8,2.4); }
+      step(dt,game){
+        // simple AI: attempt to avoid obstacles and player, change lane occasionally
+        this.y += this.vy * dt;
+        this.turnTimer -= dt;
+        if(this.turnTimer <= 0){ this.turnTimer = rand(0.8,2.8); // pick lane target near current
+          const rx = this.x + rand(-120,120);
+          this.laneTargetX = clamp(rx, game.roadX+6, game.roadX+game.roadW-this.w-6);
+        }
+        // interpolate x toward laneTargetX
+        const dx = this.laneTargetX - this.x; this.x += clamp(dx, -120*dt, 120*dt);
+
+        // basic collision avoidance for other enemies
+        for(const e of game.entities){ if(e!==this && e instanceof EnemyCar && Math.abs(e.y - this.y) < 140){ if(Math.abs(e.x - this.x) < 60){ // sidestep
+              this.x += (this.x < e.x) ? -40*dt : 40*dt;
+            }} }
+      }
+      draw(g){ g.save(); g.fillStyle = '#c43a3a'; g.beginPath(); g.roundRect(this.x,this.y,this.w,this.h,8); g.fill(); g.fillStyle='#00000066'; g.fillRect(this.x+8,this.y+12,this.w-16,28); g.restore(); }
+    }
+
+    class Obstacle extends Entity{
+      constructor(x,y,w,h,ty='bar'){ super(x,y,w,h); this.ty=ty; }
+      step(dt){ this.y += dt * 120; }
+      draw(g){ g.save(); g.fillStyle = (this.ty==='rock')? '#666':'#444'; g.fillRect(this.x,this.y,this.w,this.h); g.fillStyle='#00000033'; g.fillRect(this.x+6,this.y+6,this.w-12,this.h-12); g.restore(); }
+    }
+
+    class PowerUp extends Entity{
+      constructor(x,y,type){ super(x,y,36,36); this.type=type; this.vy = 100; }
+      step(dt){ this.y += this.vy * dt; }
+      draw(g){ g.save(); if(this.type==='coin'){ g.fillStyle='#ffd166'; g.beginPath(); g.arc(this.x+18,this.y+18,12,0,Math.PI*2); g.fill(); g.fillStyle='#00000022'; g.fillText('¢', this.x+12, this.y+24);} else if(this.type==='shield'){ g.fillStyle='#00d3ff'; g.beginPath(); g.arc(this.x+18,this.y+18,12,0,Math.PI*2); g.fill(); } else if(this.type==='nitro'){ g.fillStyle='#ff6b6b'; g.beginPath(); g.rect(this.x+6,this.y+10,24,16); g.fill(); } g.restore(); }
+    }
+
+    // -------------------- Game manager --------------------
+    class Game{
+      constructor(){
+        // Road geometry
+        this.roadW = 520; this.roadX = (canvas.width/ (window.devicePixelRatio||1) - this.roadW)/2;
+        this.roadH = canvas.height/ (window.devicePixelRatio||1);
+        // state
+        this.entities = []; this.player = new PlayerCar(this.roadX + this.roadW/2 - 30, this.roadH - 160);
+        this.spawnTimer = 0; this.spawnInterval = 1.2; this.powerTimer = 0; this.level=1; this.score=0; this.coins=0; this.highscore = 0;
+        this.running=false; this.paused=false; this.last = performance.now(); this.distance = 0;
+        this.settings = loadState().settings || {sound:true};
+        this.progress = loadState().progress || {coins:0,upgrades:{speed:0,handling:0,nitro:0}};
+        this.missions = [];
+        this.initUI();
+      }
+      initUI(){ $('#ui-score').textContent = this.score; $('#ui-coins').textContent = this.coins; $('#ui-level').textContent = this.level; $('#ui-top').textContent = Math.round(this.player.maxSpeed); }
+      start(){ this.running=true; this.paused=false; this.last = performance.now(); audio.engine(90); this.loop(); }
+      togglePause(){ this.paused = !this.paused; if(this.paused) audio.stopEngine(); else audio.engine(90); }
+      resetProgress(){ localStorage.removeItem(STORAGE_KEY); location.reload(); }
+      update(dt){ if(!this.running || this.paused) return;
+        // update road geometry in case of resize
+        this.roadX = (canvas.getBoundingClientRect().width - this.roadW)/2;
+        // update entities
+        this.player.step(dt, this);
+        for(const e of this.entities) e.step(dt, this);
+        // particles
+        particles.step(dt);
+        // spawn enemies
+        this.spawnTimer += dt;
+        const effectiveInterval = Math.max(0.45, this.spawnInterval - Math.min(0.9, this.level*0.03));
+        if(this.spawnTimer >= effectiveInterval){ this.spawnTimer=0; this.spawnEnemy(); }
+        // spawn obstacles/powerups
+        this.powerTimer += dt; if(this.powerTimer > 1.6){ this.powerTimer=0; if(Math.random()<0.45) this.spawnObstacle(); if(Math.random()<0.25) this.spawnPower(); }
+        // collision checks
+        this.handleCollisions();
+        // cleanup offscreen
+        this.entities = this.entities.filter(e=> e.y < this.roadH + 200 && !e.dead);
+        // increase difficulty with distance
+        this.distance += this.player.speed * dt * 0.01; this.score = Math.floor(this.distance + this.coins*20);
+
+        // leveling
+        if(this.distance > this.level * 1200){ this.level++; }
+
+        // update UI
+        $('#ui-score').textContent = this.score; $('#ui-coins').textContent = this.coins; $('#ui-level').textContent = this.level; $('#ui-top').textContent = Math.round(this.player.maxSpeed);
+      }
+      spawnEnemy(){ const laneX = randi(0,1) ? this.roadX + rand(40, this.roadW - 120) : this.roadX + rand(40, this.roadW - 120); const vel = rand(80 + this.level*6, 170 + this.level*8); const e = new EnemyCar(laneX, -120, vel); this.entities.push(e); }
+      spawnObstacle(){ const w = rand(40,140); const h = rand(40,120); const x = rand(this.roadX + 12, this.roadX + this.roadW - w - 12); const o = new Obstacle(x, -h - 20, w, h, Math.random()<0.4?'rock':'bar'); this.entities.push(o); }
+      spawnPower(){ const types = ['coin','shield','nitro']; const t = types[randi(0, types.length-1)]; const x = rand(this.roadX+24, this.roadX + this.roadW - 60); this.entities.push(new PowerUp(x, -40, t)); }
+      handleCollisions(){
+        for(const e of [...this.entities]){
+          if(this.player.intersects(e)){
+            if(e instanceof EnemyCar){ if(this.player.shield>0){ this.player.shield--; e.dead=true; particles.emit(e.x+e.w/2,e.y+e.h/2,20,'#00d3ff',1.2); audio.beep(320,0.06); } else { // crash
+                audio.crash(); particles.emit(this.player.x + this.player.w/2, this.player.y + this.player.h/2,35,'#ff7b7b',1.6); this.player.speed *= 0.6; this.player.combo = 0; this.coins = Math.max(0,this.coins - 5); 
+              }
+            }
+            else if(e instanceof Obstacle){ if(this.player.shield>0){ this.player.shield--; e.dead=true; particles.emit(e.x+e.w/2,e.y+e.h/2,18,'#00d3ff'); } else { audio.crash(); particles.emit(this.player.x + this.player.w/2,this.player.y + this.player.h/2,28,'#ff6b6b'); this.player.speed *= 0.7; this.player.combo = 0; this.coins = Math.max(0,this.coins - 3); e.dead=true; } }
+            else if(e instanceof PowerUp){ // pickup
+              if(e.type==='coin'){ this.coins += 1; audio.coin(); particles.emit(e.x+18,e.y+18,12,'#ffd166'); }
+              else if(e.type==='shield'){ this.player.shield += 1; audio.beep(480,0.06); particles.emit(e.x+18,e.y+18,12,'#00d3ff'); }
+              else if(e.type==='nitro'){ this.player.nitro += 1; audio.beep(680,0.06); particles.emit(e.x+18,e.y+18,12,'#ff6b6b'); }
+              e.dead=true;
+            }
+          }
+        }
+      }
+      draw(g){
+        // background gradient
+        const w = canvas.getBoundingClientRect().width; const h = canvas.getBoundingClientRect().height;
+        g.clearRect(0,0,w,h);
+        // draw road and stripes
+        g.save();
+        // road bg
+        g.fillStyle = '#0b1320'; g.fillRect(this.roadX,0,this.roadW,h);
+        // side areas
+        g.fillStyle='#061018'; g.fillRect(0,0,this.roadX,h); g.fillRect(this.roadX+this.roadW,0,w - (this.roadX + this.roadW),h);
+
+        // moving dashed lines to give sensation of movement
+        g.strokeStyle='#2d3748'; g.lineWidth = 3; g.setLineDash([28,18]); g.beginPath();
+        const offset = (performance.now()/8) % 46; g.moveTo(this.roadX + this.roadW/2 + 0, -offset); g.lineTo(this.roadX + this.roadW/2 + 0, h); g.stroke();
+        g.setLineDash([]);
+        g.restore();
+
+        // draw entities ordered by y
+        const drawList = [ ...this.entities, this.player ]; drawList.sort((a,b)=> (a.y - b.y));
+        for(const e of drawList) e.draw(g);
+
+        // particles
+        particles.draw(g);
+
+        // HUD overlay (distance bar etc.)
+        g.save(); g.fillStyle='rgba(255,255,255,0.02)'; g.fillRect(12,12,220,64); g.fillStyle='#cbd5e1'; g.font='14px Inter'; g.fillText('Distância: ' + Math.floor(this.distance) + ' m', 22, 36); g.fillText('Vel: ' + Math.round(this.player.speed) + ' km/h', 22, 56);
+        g.restore();
+      }
+      loop(){ if(!this.running) return; const now=performance.now(); const dt = Math.min(0.06, (now - this.last)/1000); this.last = now; this.update(dt); this.draw(ctx); requestAnimationFrame(()=>this.loop()); }
+      stop(){ this.running=false; audio.stopEngine(); }
+
+      // shop / upgrades
+      buyUpgrade(which){ const cost = (which==='speed')?200: (which==='handling')?150 : 250; if(this.progress.coins >= cost){ this.progress.coins -= cost; this.progress.upgrades[which] = (this.progress.upgrades[which]||0)+1; if(which==='speed'){ this.player.maxSpeed += 20; } if(which==='handling'){ this.player.friction += 0.5;} if(which==='nitro'){ this.player.nitro += 1;} saveState({settings:this.settings, progress:this.progress}); alert('Compra efetuada!'); } else alert('Moedas insuficientes.'); }
+    }
+
+    // -------------------- Inicialização do jogo --------------------
+    const game = new Game();
+
+    // Buttons
+    $('#btn-start').addEventListener('click', ()=>{ if(!game.running){ game.start(); $('#btn-start').textContent='Reiniciar'; } else { // reiniciar
+        if(confirm('Reiniciar corrida?')) location.reload(); } });
+
+    $('#btn-pause').addEventListener('click', ()=>{ game.togglePause(); $('#btn-pause').textContent = game.paused ? 'Continuar':'Pausar'; });
+    $('#btn-reset').addEventListener('click', ()=>{ if(confirm('Deseja resetar todo o progresso salvo?')) game.resetProgress(); });
+
+    $('#upgrade-speed').addEventListener('click', ()=>{ game.buyUpgrade('speed'); });
+    $('#upgrade-handling').addEventListener('click', ()=>{ game.buyUpgrade('handling'); });
+    $('#upgrade-nitro').addEventListener('click', ()=>{ game.buyUpgrade('nitro'); });
+
+    // Resize & start render loop (idle)
+    function idleRender(){ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.fillStyle='#031023'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.save(); ctx.fillStyle='#fff'; ctx.font='20px Inter'; ctx.fillText('Pressione Iniciar para jogar', 40, 80); ctx.restore(); requestAnimationFrame(idleRender); }
+    idleRender();
+
+    // helpers for rounded rect on canvas
+    CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+      if (w < 2 * r) r = w / 2;
+      if (h < 2 * r) r = h / 2;
+      this.beginPath();
+      this.moveTo(x + r, y);
+      this.arcTo(x + w, y, x + w, y + h, r);
+      this.arcTo(x + w, y + h, x, y + h, r);
+      this.arcTo(x, y + h, x, y, r);
+      this.arcTo(x, y, x + w, y, r);
+      this.closePath();
+      return this;
+    }
+
+    // Auto-save progress periodically
+    setInterval(()=>{ saveState({settings:game.settings, progress:game.progress}); }, 5000);
+
+    // ensure audio resumed on user gesture
+    window.addEventListener('click', ()=>{ if(audio && audio.ctx && audio.ctx.state==='suspended') audio.ctx.resume(); });
+
+    // accessibility: keyboard focus
+    window.addEventListener('keydown', e=>{ if(e.key===' '){ e.preventDefault(); } });
+
+    // final message
+    console.log('Corrida Evo carregado. Boa sorte!');
+  </script>
+</body>
+</html>

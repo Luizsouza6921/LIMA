@@ -1,0 +1,261 @@
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elegance Wear - Loja Ultra Realista</title>
+<style>
+/* Reset */
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Arial,sans-serif;background:#f5f5f5;color:#222;}
+a{text-decoration:none;color:inherit;}
+header{background:#111;color:#fff;padding:15px 30px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;}
+header h1{font-size:1.8em;}
+nav a{margin-left:20px;font-weight:bold;transition:color .3s;}
+nav a:hover{color:#f90;}
+header .cart{cursor:pointer;position:relative;}
+header .cart span{position:absolute;top:-8px;right:-10px;background:rgb(93, 0, 255);color:#fff;border-radius:50%;padding:2px 6px;font-size:0.8em;}
+.slider{position:relative;width:100%;height:350px;overflow:hidden;margin:20px 0;}
+.slide{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2em;color:#fff;background-size:cover;background-position:center;transition:opacity .8s;position:absolute;top:0;left:0;opacity:0;}
+.slide.active{opacity:1;}
+.slide .badge{position:absolute;top:15px;left:15px;background:#f90;color:#111;padding:5px 10px;font-weight:bold;border-radius:5px;}
+.marcas{display:flex;overflow-x:auto;gap:15px;padding:10px 0;margin-bottom:30px;}
+.marca{min-width:120px;background:#fff;border-radius:10px;padding:10px;text-align:center;flex:0 0 auto;box-shadow:0 0 5px rgba(0,0,0,0.1);}
+.marca img{width:100%;height:70px;object-fit:contain;}
+.produtos,.carrinho-itens{display:flex;flex-wrap:wrap;gap:20px;}
+.produto,.carrinho-item{background:#fff;border-radius:10px;padding:15px;text-align:center;flex:1 1 200px;box-shadow:0 0 10px rgba(0,0,0,0.1);position:relative;transition:transform .3s;}
+.produto:hover{transform:translateY(-5px);}
+.produto img,.carrinho-item img,.marca img{width:100%;height:150px;object-fit:contain;margin-bottom:10px;transition:transform .3s;}
+.produto img:hover{transform:scale(1.1);}
+.badge-produto{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:3px 7px;font-size:0.8em;font-weight:bold;border-radius:5px;}
+.size-buttons button{margin:2px;padding:5px 8px;cursor:pointer;border:1px solid #222;border-radius:5px;background:#fff;transition:all .3s;}
+.size-buttons button.selected{background:#222;color:#fff;}
+button{padding:8px 12px;background:#111;color:#fff;border:none;border-radius:5px;cursor:pointer;margin-top:5px;transition:background .3s;}
+button:hover{background:#f90;color:#111;}
+.admin-container,.login-container{max-width:500px;margin:50px auto;padding:30px;background:#fff;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,0.2);}
+input,select{padding:10px;margin-bottom:10px;width:100%;border-radius:5px;border:1px solid #ccc;}
+footer{background:#111;color:#fff;text-align:center;padding:20px;margin-top:50px;}
+.alerta{color:red;font-weight:bold;margin:5px 0;}
+.hidden{display:none;}
+#checkoutMsg{margin-top:10px;color:green;font-weight:bold;}
+@media(max-width:768px){.produtos,.carrinho-itens,.marcas{flex-direction:column;align-items:center;}}
+</style>
+</head>
+<body>
+
+<header>
+<h1>Elegance Wear</h1>
+<nav>
+<a href="#marcas">Marcas</a>
+<a href="#produtos">Produtos</a>
+<a href="#carrinho">Carrinho <span id="cartCount">0</span></a>
+<a href="#login">Admin</a>
+</nav>
+</header>
+
+<main>
+<!-- Slider principal -->
+<div class="slider">
+<div class="slide active" style="background-image:url('https://via.placeholder.com/1200x350?text=Promo+1');"><div class="badge">Novo</div></div>
+<div class="slide" style="background-image:url('https://via.placeholder.com/1200x350?text=Promo+2');"><div class="badge">Promoção</div></div>
+<div class="slide" style="background-image:url('https://via.placeholder.com/1200x350?text=Promo+3');"></div>
+</div>
+
+<!-- Marcas -->
+<section id="marcas">
+<h2>Marcas</h2>
+<div class="marcas">
+<div class="marca"><img src="Tommy.png"><p>Tommy</p></div>
+<div class="marca"><img src="Lacoste.jpg"><p>Lacoste</p></div>
+<div class="marca"><img src="Calvin.png"><p>Calvin Klein</p></div>
+<div class="marca"><img src="Individual.png"><p>Individual</p></div>
+<div class="marca"><img src="Levis.png"><p>Levi's</p></div>
+<div class="marca"><img src="REserva.png"><p>Reserva (Tênis)</p></div>
+<div class="marca"><img src="Aramis.png"><p>Aramis</p></div>
+<div class="marca"><img src="Anatomic.png"><p>Anatomic Gel</p></div>
+</div>
+</section>
+
+<!-- Produtos -->
+<section id="produtos">
+<h2>Catálogo</h2>
+<label for="filterMarca">Filtrar por Marca:</label>
+<select id="filterMarca">
+<option value="Todas">Todas</option>
+<option value="Tommy">Tommy</option>
+<option value="Lacoste">Lacoste</option>
+<option value="Calvin Klein">Calvin Klein</option>
+<option value="Individual">Individual</option>
+<option value="Levi's">Levi's</option>
+<option value="Reserva">Reserva</option>
+<option value="Aramis">Aramis</option>
+<option value="Anatomic Gel">Anatomic Gel</option>
+</select>
+<div class="produtos" id="produtosContainer"></div>
+</section>
+
+<!-- Carrinho -->
+<section id="carrinho">
+<h2>Carrinho</h2>
+<div class="carrinho-itens" id="carrinhoContainer"></div>
+<p id="totalCarrinho">Total: R$ 0</p>
+<button onclick="checkout()">Finalizar Compra</button>
+<p id="checkoutMsg"></p>
+</section>
+
+<!-- Login Admin -->
+<section id="login">
+<h2>Login Administrativo</h2>
+<div class="login-container" id="loginContainer">
+<input type="text" id="username" placeholder="Usuário">
+<input type="password" id="password" placeholder="Senha">
+<button onclick="login()">Login</button>
+<p id="loginMsg" class="alerta"></p>
+</div>
+
+<div class="admin-container hidden" id="adminContainer">
+<h2>Administração</h2>
+<h3>Adicionar Produto</h3>
+<input type="text" id="newName" placeholder="Nome do produto">
+<input type="text" id="newMarca" placeholder="Marca">
+<input type="number" id="newPreco" placeholder="Preço">
+<input type="file" id="newImgFile">
+<p>Estoque por tamanho:</p>
+<input type="number" id="newQtdP" placeholder="Qtd P">
+<input type="number" id="newQtdM" placeholder="Qtd M">
+<input type="number" id="newQtdG" placeholder="Qtd G">
+<input type="number" id="newQtdGG" placeholder="Qtd GG">
+<button onclick="addProduct()">Adicionar Produto</button>
+
+<h3>Estoque Atual</h3>
+<div class="produtos" id="adminProdutos"></div>
+<button onclick="logout()">Sair</button>
+</div>
+</section>
+
+</main>
+
+<footer>
+<p>&copy; 2025 Elegance Wear - Todos os direitos reservados</p>
+</footer>
+
+<script>
+// Slider
+let currentSlide=0; const slides=document.querySelectorAll(".slide");
+setInterval(()=>{slides[currentSlide].classList.remove("active"); currentSlide=(currentSlide+1)%slides.length; slides[currentSlide].classList.add("active");},4000);
+
+// Login e Admin
+const USER="admin"; const PASS="1951";
+let products= [
+  {name:"Polo Tommy Azul",marca:"Tommy",preco:199,img:"polo.jpg",sizes:{P:5,M:3,G:2,GG:1},badge:"Novo"},
+  {name:"Jeans Levi's 501",marca:"Levi's",preco:249,img:"jeanslevis.jpg",sizes:{38:2,40:4,42:3,44:0},badge:""},
+  {name:"Short Jeans Masculino",marca:"Levi's",preco:269,img:"ShortLevis.png",sizes:{38:2,40:4,42:3,44:0},badge:""},
+  {name:"Short Jeans Feminino",marca:"Levi's",preco:249,img:"ShortLevisF.png",sizes:{38:2,40:4,42:3,44:0},badge:""},
+  {name:"Tênis Reserva Branco",marca:"Reserva",preco:389,img:"tenis.jpg",sizes:{37:0,38:2,39:3,40:1,41:2},badge:"Promoção"},
+  {name:"Tênis Reserva Preto",marca:"Reserva",preco:359,img:"TenisRP.png",sizes:{37:0,38:2,39:3,40:1,41:2},badge:"Promoção"},
+  {name:"Tênis Reserva Branco",marca:"Reserva",preco:399,img:"TenisReserva.png",sizes:{37:0,38:2,39:3,40:1,41:2},badge:"Promoção"},
+  {name:"Calça Tommy Jeans",marca:"Tommy",preco:429,img:"CalçaT.jpg",sizes:{36:5,38:3,40:2,42:1},badge:"Novo"},
+  {name:"Sueter Tommy ",marca:"Tommy",preco:429,img:"SueterT.png",sizes:{P:5,M:3,G:2,GG:1},badge:"Novo"},
+  {name:"Bota Anatomic Gel",marca:"Anatomic Gel",preco:379,img:"Bota.jpg",sizes:{39:2,40:4,41:3,42:0},badge:""},
+  {name:"Mocassim Anatomic Gel",marca:"Anatomic Gel",preco:379,img:"Mocassim.png",sizes:{39:2,40:4,41:3,42:0},badge:""},
+  {name:"Tenis Anatomic Gel 0505",marca:"Anatomic Gel",preco:459,img:"TenisAna.png",sizes:{39:2,40:4,41:3,42:0},badge:""},
+  {name:"Tênis Lacoste Branco",marca:"Lacoste",preco:799,img:"TenisL.jpg",sizes:{37:0,38:2,39:3,40:1,41:2},badge:"Promoção"},
+  {name:"Camisa individual ML",marca:"Individual",preco:239,img:"ML.jpg",sizes:{P:5,M:3,G:2,GG:1},badge:"Novo"},
+  {name:"Camisa individual Rosa",marca:"Individual",preco:139,img:"Camisaindi1.png",sizes:{P:5,M:3,G:2,GG:1},badge:"Novo"},
+  {name:"Camisa individual Basica",marca:"Individual",preco:139,img:"CamisaIndi.png",sizes:{P:5,M:3,G:2,GG:1},badge:"Novo"},
+  {name:"Camisa Lacoste",marca:"Lacoste",preco:189,img:"imageL1.png",sizes:{P:5,M:3,G:2,GG:1},badge:"Novo"},
+  {name:"Camisa Polo Lacoste",marca:"Lacoste",preco:359,img:"imageL2.png",sizes:{P:5,M:3,G:2,GG:1},badge:"Novo"},
+  {name:"kit Cueca Calvin Klein",marca:"Calvin Klein",preco:129,img:"cuecaCK.png",sizes:{P:5,M:3,G:2,GG:1},badge:"Novo"},
+  {name:"Camiseta Polo Calvin Klein",marca:"Calvin Klein",preco:189,img:"PoloC.png",sizes:{P:5,M:3,G:2,GG:1},badge:"Novo"},
+  {name:"Camisa Polo Calvin Klein Cinza",marca:"Calvin Klein",preco:359,img:"PoloCinza.png",sizes:{P:5,M:3,G:2,GG:1},badge:"Novo"},
+  {name:"Camisa ML Aramis",marca:"Aramis",preco:189,img:"Aramis1.png",sizes:{P:5,M:3,G:2,GG:1},badge:"Novo"},
+  {name:"Camiseta Polo Aramis",marca:"Aramis",preco:189,img:"Aramis2.png",sizes:{P:5,M:3,G:2,GG:1},badge:"Novo"},
+  {name:"Camisa MC Aramis",marca:"Aramis",preco:229,img:"MC.png",sizes:{P:5,M:3,G:2,GG:1},badge:"Novo"},
+  {name:"Chinelo Aramis",marca:"Aramis",preco:89,img:"ChineloAramis.png",sizes:{39:5,40:3,41:2,42:1},badge:"Novo"},
+
+];
+
+let carrinho=[];
+
+function renderProducts(){const container=document.getElementById("produtosContainer"); container.innerHTML="";
+products.forEach((p,i)=>{let div=document.createElement("div"); div.className="produto"; div.dataset.marca=p.marca;
+let sizeButtons=""; for(let s in p.sizes){sizeButtons+=`<button onclick="selectSize(${i},'${s}')" id="btn${i}${s}">${s} (${p.sizes[s]})</button>`;}
+let lowStock=(p.sizes.P+p.sizes.M+p.sizes.G+p.sizes.GG)<=3?'<p class="alerta">Estoque baixo!</p>':'';
+let badgeHTML=p.badge?`<div class="badge-produto">${p.badge}</div>`:'';
+div.innerHTML=`${badgeHTML}<img src="${p.img}" alt="${p.name}"><p>${p.name} - R$ ${p.preco}</p>
+<div class="size-buttons">${sizeButtons}</div><p id="selected${i}">Tamanho selecionado: nenhum</p>${lowStock}
+<button onclick="addToCart(${i})">Adicionar ao Carrinho</button>`; container.appendChild(div);});
+renderAdminProducts(); renderCarrinho();
+}
+
+function selectSize(index,size){for(let s in products[index].sizes){document.getElementById(`btn${index}${s}`).classList.remove("selected");}
+document.getElementById(`btn${index}${size}`).classList.add("selected"); document.getElementById(`selected${index}`).textContent=`Tamanho selecionado: ${size}`;}
+
+document.getElementById("filterMarca").addEventListener("change",function(){const value=this.value;
+document.querySelectorAll("#produtosContainer .produto").forEach(p=>{p.style.display=(value==="Todas"||p.dataset.marca===value)?"block":"none";});});
+
+function addToCart(index){let selectedSize=document.getElementById(`selected${index}`).textContent.replace("Tamanho selecionado: ","");
+if(selectedSize==="nenhum"){alert("Selecione um tamanho!"); return;} if(products[index].sizes[selectedSize]<=0){alert("Produto sem estoque neste tamanho!"); return;}
+let item=carrinho.find(c=>c.index===index && c.size===selectedSize); if(item){item.qtd++;}else{carrinho.push({index,size:selectedSize,qtd:1});} products[index].sizes[selectedSize]--; renderProducts();}
+
+function renderCarrinho(){const container=document.getElementById("carrinhoContainer"); container.innerHTML=""; let total=0;
+carrinho.forEach(c=>{let p=products[c.index]; let div=document.createElement("div"); div.className="carrinho-item";
+div.innerHTML=`<img src="${p.img}" alt="${p.name}"><p>${p.name} - Tamanho: ${c.size} - Qtd: ${c.qtd} - R$ ${p.preco*c.qtd}</p>
+<button onclick="removeFromCart(${c.index},'${c.size}')">Remover</button>`; container.appendChild(div); total+=p.preco*c.qtd;});
+document.getElementById("totalCarrinho").textContent=`Total: R$ ${total}`; document.getElementById("cartCount").textContent=carrinho.length;}
+
+function removeFromCart(index,size){let i=carrinho.findIndex(c=>c.index===index && c.size===size); if(i>=0){products[index].sizes[size]+=carrinho[i].qtd; carrinho.splice(i,1); renderProducts();}}
+
+function checkout(){if(carrinho.length===0){document.getElementById("checkoutMsg").textContent="Carrinho vazio!"; return;}
+carrinho=[]; renderProducts(); document.getElementById("checkoutMsg").textContent="Compra finalizada com sucesso!";
+setTimeout(()=>{document.getElementById("checkoutMsg").textContent="";},3000);}
+
+// Admin
+function login(){const username=document.getElementById("username").value; const password=document.getElementById("password").value;
+if(username===USER && password===PASS){document.getElementById("loginContainer").classList.add("hidden"); document.getElementById("adminContainer").classList.remove("hidden");}
+else{document.getElementById("loginMsg").textContent="Usuário ou senha incorretos!";}}
+
+function logout(){document.getElementById("loginContainer").classList.remove("hidden"); document.getElementById("adminContainer").classList.add("hidden");
+document.getElementById("username").value=""; document.getElementById("password").value=""; document.getElementById("loginMsg").textContent="";}
+
+function renderAdminProducts(){const container=document.getElementById("adminProdutos"); container.innerHTML="";
+products.forEach((p,i)=>{let sizesText=`P:${p.sizes.P}, M:${p.sizes.M}, G:${p.sizes.G}, GG:${p.sizes.GG}`;
+let div=document.createElement("div"); div.className="produto"; div.innerHTML=`<img src="${p.img}" alt="${p.name}"><p>${p.name} - R$ ${p.preco}</p>
+<p>Estoque: ${sizesText}</p>
+<div class="product-actions">
+<button onclick="editProduct(${i})">Editar</button>
+<button onclick="deleteProduct(${i})">Excluir</button>
+</div>`; container.appendChild(div);});}
+
+function addProduct(){const name=document.getElementById("newName").value;
+const marca=document.getElementById("newMarca").value; const preco=parseFloat(document.getElementById("newPreco").value);
+const file=document.getElementById("newImgFile").files[0]; const qtdP=parseInt(document.getElementById("newQtdP").value)||0;
+const qtdM=parseInt(document.getElementById("newQtdM").value)||0; const qtdG=parseInt(document.getElementById("newQtdG").value)||0;
+const qtdGG=parseInt(document.getElementById("newQtdGG").value)||0; if(name && marca && !isNaN(preco) && file){const reader=new FileReader();
+reader.onload=function(e){products.push({name,marca,preco,img:e.target.result,sizes:{P:qtdP,M:qtdM,G:qtdG,GG:qtdGG},badge:"Novo"}); renderProducts();
+document.getElementById("newName").value="";document.getElementById("newMarca").value="";document.getElementById("newPreco").value="";
+document.getElementById("newImgFile").value="";document.getElementById("newQtdP").value="";document.getElementById("newQtdM").value="";
+document.getElementById("newQtdG").value="";document.getElementById("newQtdGG").value="";}; reader.readAsDataURL(file);}else{alert("Preencha todos os campos corretamente!");}
+
+function editProduct(index){let p=products[index]; let newName=prompt("Nome:",p.name); let newMarca=prompt("Marca:",p.marca);
+let newPreco=prompt("Preço:",p.preco); let newP=prompt("Qtd P:",p.sizes.P); let newM=prompt("Qtd M:",p.sizes.M);
+let newG=prompt("Qtd G:",p.sizes.G); let newGG=prompt("Qtd GG:",p.sizes.GG);
+if(newName && newMarca && !isNaN(newPreco)){products[index]={...p,name:newName,marca:newMarca,preco:parseFloat(newPreco),
+sizes:{P:parseInt(newP),M:parseInt(newM),G:parseInt(newG),GG:parseInt(newGG)},img:p.img}; renderProducts();}}
+
+function deleteProduct(index){if(confirm("Deseja realmente excluir este produto?")){products.splice(index,1); renderProducts();}}
+}
+renderProducts();
+</script>
+</body>
+</html>

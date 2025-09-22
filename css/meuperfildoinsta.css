@@ -1,0 +1,86 @@
+
+ body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #fafafa;
+        }
+
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .profile-header {
+            margin-bottom: 20px;
+        }
+
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: #ccc;
+            margin-right: 20px;
+        }
+
+        .profile-info {
+            vertical-align: top;
+        }
+
+        .username {
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .follow-btn {
+            background-color: #0095f6;
+            color: white;
+            padding: 5px 15px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        .follow-btn:hover {
+            background-color: #0078c9;
+        }
+
+        .bio {
+            margin: 10px 0;
+        }
+
+        .stats {
+            margin: 10px 0;
+        }
+
+        .stats span {
+            margin-right: 20px;
+        }
+
+        .highlight {
+            background-color: #ffeb3b;
+            padding: 2px 5px;
+        }
+
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .post {
+            width: 200px;
+            height: 200px;
+            background-color: #ddd;
+            margin: 5px;
+            border-radius: 5px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #888;
+        }
+        
