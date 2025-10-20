@@ -1,0 +1,35 @@
+body {
+            font-family: Arial, sans-serif;
+        }
+        .hero {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-image: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+        }
+        .services {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+        }
+        .service-card {
+            background-color: #f3f4f6;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .contact {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            background-color: #1f2937;
+            color: white;
+        }

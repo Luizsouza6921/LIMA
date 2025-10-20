@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Pedido de Desculpas ❤️</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Montserrat:wght@300;400;600;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #0f0c29;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Canvas de fundo com partículas */
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Flores flutuantes 3D */
+        .flower-floating {
+            position: fixed;
+            font-size: 2.5rem;
+            animation: float3d 20s infinite ease-in-out;
+            opacity: 0;
+            pointer-events: none;
+            filter: drop-shadow(0 0 10px rgba(255, 182, 193, 0.5));
+        }
+
+        @keyframes float3d {
+            0% {
+                transform: translate3d(0, 120vh, 0) rotate(0deg) scale(0.5);
+                opacity: 0;
+            }
+            5% {
+                opacity: 0.8;
+            }
+            50% {
+                transform: translate3d(var(--x-mid), 50vh, 0) rotate(180deg) scale(1);
+                opacity: 0.9;
+            }
+            95% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate3d(var(--x-end), -20vh, 0) rotate(360deg) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* Container principal */
+        .main-wrapper {
+            position: relative;
+            z-index: 1;
+            padding: 50px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Header decorativo */
+        .header-decoration {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 1.5s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-flowers {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            animation: rotateFlowers 4s infinite ease-in-out;
+        }
+
+        @keyframes rotateFlowers {
+            0%, 100% {
+                transform: rotate(-5deg) scale(1);
+            }
+            50% {
+                transform: rotate(5deg) scale(1.1);
+            }
+        }
+
+        .header-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 50%, #ff9a9e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 5px 15px rgba(255, 182, 193, 0.3);
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .header-subtitle {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2rem;
+            color: #ffecd2;
+            opacity: 0.9;
+        }
+
+        /* Container de conteúdo */
+        .content-container {
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 40px;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5),
+                        0 0 80px rgba(255, 182, 193, 0.3),
+                        inset 0 0 60px rgba(255, 182, 193, 0.1);
+            max-width: 1100px;
+            width: 95%;
+            padding: 70px 60px;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInScale 1.5s ease-out;
+            border: 2px solid rgba(255, 182, 193, 0.3);
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* Decoração de canto */
+        .corner-decoration {
+            position: absolute;
+            font-size: 5rem;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .corner-decoration.top-left {
+            top: -20px;
+            left: -20px;
+            transform: rotate(-20deg);
+        }
+
+        .corner-decoration.top-right {
+            top: -20px;
+            right: -20px;
+            transform: rotate(20deg);
+        }
+
+        .corner-decoration.bottom-left {
+            bottom: -20px;
+            left: -20px;
+            transform: rotate(20deg);
+        }
+
+        .corner-decoration.bottom-right {
+            bottom: -20px;
+            right: -20px;
+            transform: rotate(-20deg);
+        }
+
+        /* Divisor decorativo */
+        .divider {
+            text-align: center;
+            font-size: 2rem;
+            margin: 40px 0;
+            opacity: 0.6;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+            50% {
+                transform: scale(1.15);
+                opacity: 0.8;
+            }
+        }
+
+        /* Citação especial */
+        .quote-section {
+            position: relative;
+            margin: 50px 0;
+            padding: 50px 40px;
+            background: linear-gradient(135deg, #fff5f7 0%, #ffe8ec 100%);
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(255, 105, 135, 0.15),
+                        inset 0 0 30px rgba(255, 182, 193, 0.1);
+            animation: fadeInUp 2s ease-out;
+            border: 3px solid rgba(255, 182, 193, 0.3);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .quote-icon {
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            font-size: 6rem;
+            color: #ff6b9d;
+            opacity: 0.2;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .quote-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            line-height: 1.8;
+            color: #5a3a5a;
+            font-style: italic;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .quote-author {
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.2rem;
+            color: #764ba2;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* Mensagem de desculpas */
+        .message-section {
+            margin: 50px 0;
+            animation: fadeIn 2.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .message-paragraph {
+            font-size: 1.4rem;
+            line-height: 2.2;
+            color: #444;
+            margin-bottom: 30px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .message-paragraph.highlight {
+            font-size: 1.6rem;
+            color: #ff6b9d;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            text-shadow: 0 2px 10px rgba(255, 107, 157, 0.2);
+        }
+
+        .message-paragraph.emphasis {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #764ba2;
+        }
+
+        /* Seção de vídeo */
+        .video-section {
+            margin: 60px 0;
+            animation: fadeInScale 3s ease-out;
+        }
+
+        .video-title {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            color: #764ba2;
+            margin-bottom: 40px;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .video-title::before,
+        .video-title::after {
+            content: '💕';
+            position: absolute;
+            font-size: 2rem;
+            animation: heartbeat 1.5s infinite;
+        }
+
+        .video-title::before {
+            left: calc(50% - 200px);
+        }
+
+        .video-title::after {
+            right: calc(50% - 200px);
+        }
+
+        @keyframes heartbeat {
+            0%, 100% {
+                transform: scale(1);
+            }
+            25%, 75% {
+                transform: scale(1.3);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .video-wrapper {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.3),
+                        0 0 50px rgba(255, 182, 193, 0.3);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: 5px solid #fff;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 177.78%; /* Proporção 9:16 para vídeos de celular */
+            background: #000;
+        }
+
+        .video-container video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Mantém o vídeo inteiro sem cortar */
+            background: #000;
+        }
+
+        .video-instructions {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 1rem;
+            color: #666;
+            font-style: italic;
+            padding: 15px 30px;
+            background: rgba(255, 182, 193, 0.1);
+            border-radius: 15px;
+            border: 2px dashed rgba(255, 107, 157, 0.3);
+        }
+
+        .video-instructions strong {
+            color: #ff6b9d;
+            font-weight: 700;
+        }
+
+        /* Mensagem final */
+        .final-section {
+            margin: 60px 0 40px;
+            text-align: center;
+            animation: fadeIn 3.5s ease-out;
+        }
+
+        .final-message {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: #764ba2;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-shadow: 0 3px 15px rgba(118, 75, 162, 0.2);
+        }
+
+        .final-hearts {
+            font-size: 3.5rem;
+            animation: heartbeat 1.5s infinite;
+        }
+
+        /* Footer decorativo */
+        .footer-decoration {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 40px;
+            border-top: 2px solid rgba(255, 182, 193, 0.3);
+        }
+
+        .footer-flowers {
+            font-size: 3rem;
+            opacity: 0.7;
+            margin-bottom: 20px;
+        }
+
+        .footer-text {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+            color: #764ba2;
+            opacity: 0.8;
+        }
+
+        /* Botão interativo */
+        .interactive-button {
+            display: inline-block;
+            margin: 30px auto;
+            padding: 20px 50px;
+            background: linear-gradient(135deg, #ff6b9d 0%, #ff9a9e 100%);
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 15px 35px rgba(255, 107, 157, 0.4);
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .interactive-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(255, 107, 157, 0.6);
+        }
+
+        .interactive-button:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        /* Modal de mensagem especial */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 50px;
+            border-radius: 30px;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: #764ba2;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        .modal-close {
+            padding: 15px 40px;
+            background: #ff6b9d;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: #ff9a9e;
+            transform: scale(1.05);
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .header-title {
+                font-size: 2.5rem;
+            }
+
+            .header-subtitle {
+                font-size: 1.3rem;
+            }
+
+            .content-container {
+                padding: 40px 30px;
+            }
+
+            .quote-text {
+                font-size: 1.3rem;
+            }
+
+            .message-paragraph {
+                font-size: 1.1rem;
+            }
+
+            .video-title {
+                font-size: 1.8rem;
+            }
+
+            .video-title::before,
+            .video-title::after {
+                display: none;
+            }
+
+            .video-wrapper {
+                max-width: 100%;
+            }
+
+            .final-message {
+                font-size: 1.6rem;
+            }
+
+            .interactive-button {
+                padding: 15px 35px;
+                font-size: 1.1rem;
+            }
+
+            .modal-content {
+                padding: 30px;
+                margin: 20px;
+            }
+
+            .modal-text {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* Efeitos de luz */
+        .light-effect {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 182, 193, 0.3) 0%, transparent 70%);
+            pointer-events: none;
+            animation: lightMove 10s infinite ease-in-out;
+        }
+
+        .light-effect:nth-child(1) {
+            top: -100px;
+            left: -100px;
+        }
+
+        .light-effect:nth-child(2) {
+            bottom: -100px;
+            right: -100px;
+            animation-delay: 5s;
+        }
+
+        @keyframes lightMove {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.5;
+            }
+            50% {
+                transform: translate(50px, 50px) scale(1.5);
+                opacity: 0.8;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Canvas de partículas -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Flores flutuantes -->
+    <script>
+        // Criar flores flutuantes
+        const flowerEmojis = ['🌸', '🌺', '🌼', '🌻', '🌷', '🌹', '💐', '🏵️'];
+        for (let i = 0; i < 25; i++) {
+            const flower = document.createElement('div');
+            flower.className = 'flower-floating';
+            flower.textContent = flowerEmojis[Math.floor(Math.random() * flowerEmojis.length)];
+            flower.style.left = Math.random() * 100 + '%';
+            flower.style.setProperty('--x-mid', (Math.random() * 200 - 100) + 'px');
+            flower.style.setProperty('--x-end', (Math.random() * 200 - 100) + 'px');
+            flower.style.animationDelay = Math.random() * 20 + 's';
+            flower.style.animationDuration = (15 + Math.random() * 10) + 's';
+            document.body.appendChild(flower);
+        }
+    </script>
+
+    <!-- Wrapper principal -->
+    <div class="main-wrapper">
+        <!-- Header -->
+        <div class="header-decoration">
+            <div class="header-flowers">🌹 ✨ 🌸 ✨ 🌺 ✨ 🌹</div>
+            <h1 class="header-title">Meu Pedido de Desculpas</h1>
+            <p class="header-subtitle">Para a pessoa mais especial da minha vida</p>
+        </div>
+
+        <!-- Container de conteúdo -->
+        <div class="content-container">
+            <!-- Efeitos de luz -->
+            <div class="light-effect"></div>
+            <div class="light-effect"></div>
+
+            <!-- Decorações de canto -->
+            <div class="corner-decoration top-left">🌹</div>
+            <div class="corner-decoration top-right">🌺</div>
+            <div class="corner-decoration bottom-left">🌸</div>
+            <div class="corner-decoration bottom-right">🌷</div>
+
+            <!-- Citação -->
+            <div class="quote-section">
+                <div class="quote-icon">"</div>
+                <p class="quote-text">
+                    Nós precisamos do toque de quem amamos quase tanto quanto de ar para respirar.
+                </p>
+                <p class="quote-author">— A Cinco Passos de Você</p>
+            </div>
+
+            <div class="divider">✨ 💕 ✨</div>
+
+            <!-- Mensagem de desculpas -->
+            <div class="message-section">
+                <p class="message-paragraph">
+                    Eu sei que cometi erros que machucaram você, e não há palavras suficientes para expressar o quanto me arrependo.
+                </p>
+                
+                <p class="message-paragraph emphasis">
+                    Cada momento sem você me faz perceber o vazio que só a sua presença consegue preencher.
+                </p>
+                
+                <p class="message-paragraph">
+                    Como diz a frase que tanto amamos, eu preciso do seu toque, da sua presença, do seu amor...
+                </p>
+                
+                <p class="message-paragraph highlight">
+                    Quase tanto quanto preciso de ar para respirar.
+                </p>
+                
+                <p class="message-paragraph">
+                    Sem você, é como se o mundo perdesse as cores, como se a música perdesse a melodia, como se a vida perdesse o sentido.
+                </p>
+                
+                <p class="message-paragraph emphasis">
+                    Me perdoa por tudo que fiz de errado. Prometo ser melhor, prometo cuidar melhor de nós, prometo valorizar cada segundo ao seu lado.
+                </p>
+                
+                <p class="message-paragraph">
+                    Você é a razão do meu sorriso, a paz nos meus dias difíceis, e o amor que eu quero para sempre na minha vida.
+                </p>
+            </div>
+
+            <div class="divider">✨ 💝 ✨</div>
+
+            <!-- Seção de vídeo -->
+            <div class="video-section">
+                <h2 class="video-title">Nossos Momentos Especiais</h2>
+                
+                <div class="video-wrapper">
+                    <div class="video-container">
+                        <video controls playsinline>
+                            <source src="videoK.mp4" type="video/mp4">
+                            Seu navegador não suporta a reprodução de vídeos.
+                        </video>
+                    </div>
+                </div>
+                
+            </div>
+
+            <div class="divider">✨ 💗 ✨</div>
+
+            <!-- Mensagem final -->
+            <div class="final-section">
+                <p class="final-message">
+                    Te amo mais do que palavras podem expressar
+                </p>
+                <div class="final-hearts">💕 💖 💗 💝 💘 💗 💖 💕</div>
+                
+                <button class="interactive-button" onclick="showModal()">
+                    Clique Aqui 💕
+                </button>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer-decoration">
+                <div class="footer-flowers">🌹 🌸 🌺 🌷 🌻 🌼 🌹</div>
+                <p class="footer-text">Com todo meu amor e carinho ❤️</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="specialModal">
+        <div class="modal-content">
+            <p class="modal-text">
+                Você é a melhor coisa que já aconteceu na minha vida.<br><br>
+                Ainda vou te fazer feliz, eu te amo 💕
+            </p>
+            <button class="modal-close" onclick="closeModal()">Fechar</button>
+        </div>
+    </div>
+
+    <!-- Script de partículas -->
+    <script>
+        // Canvas de partículas
+        const canvas = document.getElementById('particles-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        const particleCount = 80;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+                this.color = `rgba(255, ${Math.floor(Math.random() * 100 + 155)}, ${Math.floor(Math.random() * 100 + 155)}, ${Math.random() * 0.5 + 0.3})`;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+                if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+                
+                // Conectar partículas próximas
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 120) {
+                        ctx.strokeStyle = `rgba(255, 182, 193, ${0.2 - distance / 600})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            requestAnimationFrame(animate);
+        }
+
+        init();
+        animate();
+
+        // Redimensionar canvas
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Modal
+        function showModal() {
+            document.getElementById('specialModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('specialModal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>
+

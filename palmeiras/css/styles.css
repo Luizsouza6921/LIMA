@@ -1,0 +1,248 @@
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+    }
+
+    body {
+        background-color: #0b2f1a;
+        color: #ffd500;
+        overflow-x: hidden;
+    }
+
+    header {
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 50px;
+        position: fixed;
+        width: 100%;
+        z-index: 10;
+        backdrop-filter: blur(6px);
+        
+    }
+
+    header img {
+        height: 55px;
+    }
+
+    nav a {
+        color: #2eca0f;
+        text-decoration: none;
+        margin-left: 25px;
+        font-weight: 500;
+        transition: 0.3s;
+    }
+
+    nav a:hover {
+        color: #c8ffb0;
+    }
+
+
+    .hero {
+        background: url('https://sep-bucket-prod.s3.amazonaws.com/wp-content/uploads/2020/06/reclame-aqui-1920x949-1.jpg') center/cover no-repeat;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        position: relative;
+    }
+
+    .hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+    }
+
+    .text {
+        position: relative;
+        z-index: 2;
+        max-width: 750px;
+        animation: fadeIn 1.5s ease;
+    }
+
+    .text h1 {
+        font-size: 3em;
+        margin-bottom: 10px;
+        letter-spacing: 1px;
+    }
+
+    .text p {
+        font-size: 1.2em;
+        color: #ffd500;
+        margin-bottom: 25px;
+        line-height: 1.6;
+    }
+
+    .btn {
+        background-color: #397558;
+        color: white;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+    .btn:hover {
+        background-color: #ffe600;
+        color: #004d2b;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(25px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .sobre {
+        padding: 100px 20px;
+        text-align: center;
+        background-color: #09361f;
+    }
+
+    .sobre h2 {
+        font-size: 2.2em;
+        color: #00ff88;
+        margin-bottom: 15px;
+    }
+
+    .sobre p {
+        max-width: 800px;
+        margin: 0 auto;
+        line-height: 1.8;
+        color: #d8f5d8;
+        font-size: 1.1em;
+    }
+
+    .galeria {
+        padding: 100px 30px;
+        text-align: center;
+        background-color: #0f4426;
+    }
+
+    .galeria h2 {
+        font-size: 2em;
+        margin-bottom: 40px;
+        color: #00ff88;
+    }
+
+    .foto {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+        max-width: 1100px;
+        margin: auto;
+    }
+
+    .foto img {
+        width: 100%;
+        border-radius: 10px;
+        height: 220px;
+        object-fit: cover;
+        transition: 0.3s;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .foto img:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .contato {
+        background-color: #09361f;
+        text-align: center;
+        padding: 90px 20px;
+    }
+
+    .contato h2 {
+        color: #00ff88;
+        margin-bottom: 20px;
+    }
+
+    .contato p {
+        color: #d8f5d8;
+        margin-bottom: 30px;
+        font-size: 1.1em;
+    }
+
+    .contato input {
+        padding: 12px;
+        width: 280px;
+        border-radius: 6px;
+        border: none;
+        outline: none;
+        margin-right: 10px;
+    }
+
+    .contato button {
+        background-color: #00a859;
+        border: none;
+        padding: 12px 25px;
+        color: white;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .contato button:hover {
+        background-color: #ffe600;
+        color: #004d2b;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+        background-color: #004d2b;
+        text-align: center;
+        padding: 20px;
+        color: #c8f8d0;
+        font-size: 0.9em;
+    }
+
+    @media (max-width: 768px) {
+        header {
+            flex-direction: column;
+        }
+    }
+
+    nav {
+        margin-top: 10px;
+    }
+
+    .hero-content h1 {
+        font-size: 2.3em;
+    }
+
+    .hero-content p {
+        font-size: 1em;
+    }
+
+    button{
+    align-items: center;
+    margin-bottom: 0%;
+    color: rgb(29, 88, 0);
+     width: 100px;
+     height: 30px;
+     border: none;
+     cursor: pointer;
+     font-weight: 600;
+     transition: 0.3s;
+    }
+logo{
+    width: 1px;
+    height: 1px;
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 10px;
+}
