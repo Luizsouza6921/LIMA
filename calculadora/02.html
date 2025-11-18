@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Calculadora de Verificações</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        font-family: "Poppins", sans-serif;
+        background: linear-gradient(135deg, #007bff, #6610f2);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .container {
+        background: white;
+        padding: 25px;
+        width: 420px;
+        border-radius: 18px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+        animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+
+    label {
+        margin-top: 10px;
+        display: block;
+        font-weight: 500;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 8px;
+        border: 2px solid #ccc;
+        font-size: 16px;
+        outline: none;
+        transition: .3s;
+    }
+
+    input:focus {
+        border-color: #007bff;
+    }
+
+    button {
+        margin-top: 20px;
+        width: 100%;
+        padding: 12px;
+        border: none;
+        background: #28a745;
+        color: white;
+        font-size: 18px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background: #218838;
+    }
+
+    ul {
+        margin-top: 20px;
+        padding-left: 0;
+        list-style: none;
+    }
+
+    li {
+        background: #f1f1f1;
+        padding: 12px;
+        border-radius: 10px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 500;
+    }
+
+    .sim {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .nao {
+        color: #dc3545;
+        font-weight: bold;
+    }
+
+    .icone {
+        font-size: 22px;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Calculadora de Verificações</h2>
+
+    <label>Primeiro número:</label>
+    <input type="number" id="num1">
+
+    <label>Segundo número:</label>
+    <input type="number" id="num2">
+
+    <button onclick="verificar()">Verificar</button>
+
+    <ul id="resultado"></ul>
+</div>
+
+<script>
+function verificar() {
+    const n1 = Number(document.getElementById("num1").value);
+    const n2 = Number(document.getElementById("num2").value);
+    const res = document.getElementById("resultado");
+    res.innerHTML = "";
+
+    function add(texto, condicao) {
+        const li = document.createElement("li");
+        li.innerHTML = `
+            <span class="icone">${condicao ? "✔️" : "❌"}</span>
+            ${texto}: <span class="${condicao ? "sim" : "nao"}">${condicao ? "Sim" : "Não"}</span>
+        `;
+        res.appendChild(li);
+    }
+
+    add("O primeiro número é maior que o segundo", n1 > n2);
+    add("Ambos são pares", n1 % 2 === 0 && n2 % 2 === 0);
+    add("O primeiro é múltiplo do segundo", n2 !== 0 && n1 % n2 === 0);
+    add("Os dois números são iguais", n1 === n2);
+
+    let soma = n1 + n2;
+    add("A soma dos números é par", soma % 2 === 0);
+    add("A soma é maior que 10", soma > 10);
+    add("O primeiro é ímpar e o segundo par", (n1 % 2 !== 0 && n2 % 2 === 0));
+    add("O primeiro número é negativo", n1 < 0);
+}
+</script>
+
+</body>
+</html>
