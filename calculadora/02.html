@@ -1,158 +1,97 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Calculadora de Verificações</title>
-
-<!-- Google Font -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
-<style>
-    body {
-        font-family: "Poppins", sans-serif;
-        background: linear-gradient(135deg, #007bff, #6610f2);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-    }
-
-    .container {
-        background: white;
-        padding: 25px;
-        width: 420px;
-        border-radius: 18px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-        animation: fadeIn 0.6s ease;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    h2 {
-        text-align: center;
-        color: #333;
-        margin-bottom: 15px;
-        font-weight: 600;
-    }
-
-    label {
-        margin-top: 10px;
-        display: block;
-        font-weight: 500;
-    }
-
-    input {
-        width: 100%;
-        padding: 10px;
-        margin-top: 5px;
-        border-radius: 8px;
-        border: 2px solid #ccc;
-        font-size: 16px;
-        outline: none;
-        transition: .3s;
-    }
-
-    input:focus {
-        border-color: #007bff;
-    }
-
-    button {
-        margin-top: 20px;
-        width: 100%;
-        padding: 12px;
-        border: none;
-        background: #28a745;
-        color: white;
-        font-size: 18px;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-    button:hover {
-        background: #218838;
-    }
-
-    ul {
-        margin-top: 20px;
-        padding-left: 0;
-        list-style: none;
-    }
-
-    li {
-        background: #f1f1f1;
-        padding: 12px;
-        border-radius: 10px;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-weight: 500;
-    }
-
-    .sim {
-        color: #28a745;
-        font-weight: bold;
-    }
-
-    .nao {
-        color: #dc3545;
-        font-weight: bold;
-    }
-
-    .icone {
-        font-size: 22px;
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Verificações</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f0f0f0; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #2c3e50; }
+        input { padding: 10px; width: 100%; margin: 10px 0; font-size: 18px; }
+        button { padding: 12px 20px; font-size: 18px; background: #3498db; color: white; border: none; cursor: pointer; }
+        button:hover { background: #2980b9; }
+        .resultado { margin-top: 20px; line-height: 2; }
+        .sim { color: green; font-weight: bold; }
+        .nao { color: red; font-weight: bold; }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <h1>CALCULADORA DE VERIFICAÇÕES</h1>
+        
+        <label>Primeiro número:</label>
+        <input type="number" id="num1" required>
+        
+        <label>Segundo número:</label>
+        <input type="number" id="num2" required>
+        
+        <button onclick="calcular()">VERIFICAR TUDO</button>
+        
+        <div id="saida" class="resultado"></div>
+    </div>
 
-<div class="container">
-    <h2>Calculadora de Verificações</h2>
+    <script>
+        function calcular() {
+            // Pegando os valores
+            const num1 = parseFloat(document.getElementById('num1').value);
+            const num2 = parseFloat(document.getElementById('num2').value);
 
-    <label>Primeiro número:</label>
-    <input type="number" id="num1">
+            // Validação básica
+            if (isNaN(num1) || isNaN(num2)) {
+                document.getElementById('saida').innerHTML = "<span class='nao'>Por favor, digite dois números válidos!</span>";
+                return;
+            }
 
-    <label>Segundo número:</label>
-    <input type="number" id="num2">
+            let resultado = "<h3>RESULTADOS:</h3>";
 
-    <button onclick="verificar()">Verificar</button>
+            // 1. Primeiro número é maior que o segundo?
+            resultado += num1 > num2 
+                ? "<div class='sim'>✓ O primeiro número é MAIOR que o segundo.</div>"
+                : "<div class='nao'>✗ O primeiro número NÃO é maior que o segundo.</div>";
 
-    <ul id="resultado"></ul>
-</div>
+            // 2. Ambos são pares?
+            resultado += (num1 % 2 === 0 && num2 % 2 === 0)
+                ? "<div class='sim'>✓ Ambos os números são PARES.</div>"
+                : "<div class='nao'>✗ Pelo menos um dos números é ÍMPAR.</div>";
 
-<script>
-function verificar() {
-    const n1 = Number(document.getElementById("num1").value);
-    const n2 = Number(document.getElementById("num2").value);
-    const res = document.getElementById("resultado");
-    res.innerHTML = "";
+            // 3. Primeiro número é múltiplo do segundo?
+            if (num2 !== 0 && num1 % num2 === 0) {
+                resultado += `<div class='sim'>✓ ${num1} é MÚLTIPLO de ${num2}.</div>`;
+            } else {
+                resultado += num2 === 0 
+                    ? "<div class='nao'>✗ Não é possível verificar múltiplo (divisão por zero).</div>"
+                    : `<div class='nao'>✗ ${num1} NÃO é múltiplo de ${num2}.</div>`;
+            }
 
-    function add(texto, condicao) {
-        const li = document.createElement("li");
-        li.innerHTML = `
-            <span class="icone">${condicao ? "✔️" : "❌"}</span>
-            ${texto}: <span class="${condicao ? "sim" : "nao"}">${condicao ? "Sim" : "Não"}</span>
-        `;
-        res.appendChild(li);
-    }
+            // 4. Ambos os números são iguais?
+            resultado += num1 === num2
+                ? "<div class='sim'>✓ Os dois números são IGUAIS.</div>"
+                : "<div class='nao'>✗ Os dois números são DIFERENTES.</div>";
 
-    add("O primeiro número é maior que o segundo", n1 > n2);
-    add("Ambos são pares", n1 % 2 === 0 && n2 % 2 === 0);
-    add("O primeiro é múltiplo do segundo", n2 !== 0 && n1 % n2 === 0);
-    add("Os dois números são iguais", n1 === n2);
+            // 5. A soma dos dois números é par ou ímpar?
+            const soma = num1 + num2;
+            resultado += (soma % 2 === 0)
+                ? `<div class='sim'>✓ A soma (${soma}) é PAR.</div>`
+                : `<div class='nao'>✗ A soma (${soma}) é ÍMPAR.</div>`;
 
-    let soma = n1 + n2;
-    add("A soma dos números é par", soma % 2 === 0);
-    add("A soma é maior que 10", soma > 10);
-    add("O primeiro é ímpar e o segundo par", (n1 % 2 !== 0 && n2 % 2 === 0));
-    add("O primeiro número é negativo", n1 < 0);
-}
-</script>
+            // 6. A soma é maior que 10?
+            resultado += soma > 10
+                ? `<div class='sim'>✓ A soma (${soma}) é MAIOR que 10.</div>`
+                : `<div class='nao'>✗ A soma (${soma}) NÃO é maior que 10.</div>`;
 
+            // 7. Primeiro número é ímpar e o segundo é par?
+            resultado += (num1 % 2 !== 0 && num2 % 2 === 0)
+                ? "<div class='sim'>✓ O primeiro é ÍMPAR e o segundo é PAR.</div>"
+                : "<div class='nao'>✗ O primeiro NÃO é ímpar OU o segundo NÃO é par.</div>";
+
+            // 8. Primeiro número é negativo?
+            resultado += num1 < 0
+                ? "<div class='sim'>✓ O primeiro número é NEGATIVO.</div>"
+                : "<div class='nao'>✗ O primeiro número NÃO é negativo.</div>";
+
+            document.getElementById('saida').innerHTML = resultado;
+        }
+    </script>
 </body>
 </html>
